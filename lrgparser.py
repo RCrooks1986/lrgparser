@@ -71,6 +71,23 @@ def check_build_length(dict):
         is_same = False
     return is_same
 
+def compare_build_length(dict):
+    length37 = int(dict['GRCh37']['span_other_end']) - int(dict['GRCh37']['span_other_start'])
+    length38 = int(dict['GRCh38']['span_other_end']) - int(dict['GRCh38']['span_other_start'])
+    
+    if length37 == length38:
+        is_same = True
+    else:
+        is_same = False
+    return is_same
+
+def find_length_difference(dict):
+    length37 = int(dict['GRCh37']['span_other_end']) - int(dict['GRCh37']['span_other_start'])
+    length38 = int(dict['GRCh38']['span_other_end']) - int(dict['GRCh38']['span_other_start'])
+    
+    diff = length38 - length37
+    return diff
+    
 def compare_build_positions(dict):
     '''
     Method to compare build positions, returns a bool
@@ -97,6 +114,16 @@ def find_position_shift(dict):
     
     shift = pos37_start - pos38_start # different between two
     return shift
+
+def output_comparison(dict):
+    #length = compare_build_length(dict) ## everything ok between builds?
+    position = compare_build_positions(dict) ## check start positions for each build
+    #shift = find_position_shift(dict)
+    length_diff = abs(find_length_difference(dict))
+    
+    print("Difference in lrg length:", length_diff, "Start position is shifted by:", position)
+    
+        
     
 # Takes a subroot of fixed annotation tags
 fixed_annotation_subroot = root.iter('fixed_annotation')
@@ -122,16 +149,18 @@ for m in fixed_annotation_subroot:
 check_37 = check_build_length(dict['GRCh37'])
 check_38 = check_build_length(dict['GRCh38'])
 
+
 print(check_37)
 print(check_38)
 print('###############')
 # test compare_build_positions
 pos = compare_build_positions(dict)
 
-print(pos)
-print('********************')
+print('Is the position of the LRG on each build the same?', pos)
 
 #test to return the position shift between builds
 
 shift = find_position_shift(dict)
 print("The new GR38 build is shifted by", shift, "nucleotide positions")
+
+print(output_comparison)
