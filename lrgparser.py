@@ -1,23 +1,17 @@
 # -*- coding: utf-8 -*-
 
-# Import Element Tree library
-import xml.etree.ElementTree as ET
-
-# Parse LRG file into element tree
-tree = ET.parse('LRG_214.xml')
-root = tree.getroot()
-print(tree)
-print(root)
-
 #Current and previous build, update these if genome build changes
 currentbuild = "GRCh38"
 previousbuild = "GRCh37"
 
-#for child in root[1][1][2]:
-#    print(child.tag, child.attrib)
-    
-#for mapping in root.iter('annotation_set'):
-#    print(mapping.attrib)
+# Import Element Tree library
+import xml.etree.ElementTree as ET
+
+# Parse LRG file into element tree
+tree = ET.parse('LRG_1.xml')
+root = tree.getroot()
+print(tree)
+print(root)
 
 # Takes a subroot of annotation_set tags
 annotation_set_subroot = root.iter('annotation_set')
@@ -36,9 +30,27 @@ for m in mapping_set_subroot:
     
     #Search by coord system
     if coord_system == currentbuild:
+        currentbuilddict = []
+        
+        for item in m:
+            d = {}
+            for a in item.attributes.values():
+                d[a.name] = a.value
+            currentbuilddict.append(d)
+        
         print(m.attrib['other_start'])
         print(m.attrib['other_end'])
     if coord_system == previousbuild:
+        previousbuilddict = []
+        
+        for item in m:
+            d = {}
+            for a in item.attributes.values():
+                d[a.name] = a.value
+            previousbuilddict.append(d)
+            
         print(m.attrib['other_start'])
         print(m.attrib['other_end'])
             
+print(currentbuilddict)
+print(previousbuilddict)
