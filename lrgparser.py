@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-#Current and previous build, update these if genome build changes
-currentbuild = "GRCh38"
-previousbuild = "GRCh37"
+# Define LRG name
+lrg = '214'
+lrgfilename = 'LRG_' + lrg + '.xml'
 
 # Import Element Tree library
 import xml.etree.ElementTree as ET
 
 # Parse LRG file into element tree
-tree = ET.parse('LRG_214.xml')
+tree = ET.parse(lrgfilename)
 root = tree.getroot()
 print(tree)
 print(root)
@@ -74,17 +74,53 @@ transcripts = {}
 
 # Loop through fixed annotations
 for m in fixed_annotation_subroot:
+    #Transcript number is defined
+    
     # Subroot of transcripts
     transcript_subroot = m.iter('transcript')
     for n in transcript_subroot:
         # Get transcript name
         transcriptname = n.attrib['name']
         
+        # Make transcript and protein names for extraction
+        lrgname = 'LRG_' + lrg
+        lrgtranscriptname = 'LRG_' + lrg + transcriptname
+        lrgproteinname = lrgtranscriptname.replace('t', 'p')
+        
+        # Single transcript dictionary
+        transcript = {}
+        
         # Subroot of exons
         exons_subroot = n.iter('exon')
         for o in exons_subroot:
-            # Get transcript name
-            transcriptname = n.attrib['name']
+            exonnumber = o.attrib['label']
+            
+            # Exon coordinates dictionary
+            exon = {}
+            
+            # Subset of coordinates
+            coordinates_subset = o.iter('coordinates')
+            for p in coordinates_subset:
+                exonstart = p.attrib['start']
+                exonend = p.attrib['end']
+                coord_system = p.attrib['coord_system']
+                
+                # If statement for assigning coordinates
+                if coord_system == lrgname:
+                    exon['genomicstart'] = exonstart
+                    exon['genomicend'] = exonend
+                elif coord_system == lrgtranscriptname:
+                    exon['transcriptstart'] = exonstart
+                    exon['transcriptend'] = exonend
+                elif coord_system == lrgproteinname:
+                    exon['proteinstart'] = exonstart
+                    exon['proteinend'] = exonend
+            
+            # Add coordinates to that exon
+            transcript[exonnumber] = exon
+        
+        # Add transcript to the transcripts dictionary
+        transcripts[transcriptname] = transcript
 
 # test check_build_length - should print'true' to screen
 check_37 = check_build_length(dict['GRCh37'])
