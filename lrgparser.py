@@ -128,8 +128,6 @@ def output_comparison(dict):
     
     print("Difference in lrg length:", length_diff, "Start position is shifted by:", position)
     
-        
-    
 # Takes a subroot of fixed annotation tags
 fixed_annotation_subroot = root.iter('fixed_annotation')
 
@@ -169,3 +167,33 @@ shift = find_position_shift(dict)
 print("The new GR38 build is shifted by", shift, "nucleotide positions")
 
 print(output_comparison)
+##################### output to html #########################
+    #length = compare_build_length(dict) ## everything ok between builds?
+position = compare_build_positions(dict) ## check start positions for each build
+    #shift = find_position_shift(dict)
+length_diff = abs(find_length_difference(dict))
+
+
+html_str = """
+<h1>Comparison of builds </h1>
+
+<table border=1>
+     <tr>
+     <th>Build</th>
+       <th>Start Position</th>
+       <th>End Position</th>
+     </tr>
+     <indent>
+       <tr>
+         <td><%= position %></td>
+         <td><%= length_diff %></td>
+         <td>hello3</td>
+       </tr>
+     </indent>
+</table>
+"""
+
+Html_file= open("test.html","w")
+
+Html_file.write(html_str)
+Html_file.close()
