@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Define LRG name
-lrg = '214'
-lrgfilename = 'LRG_' + lrg + '.xml'
+#Current and previous build, update these if genome build changes
+currentbuild = "GRCh38"
+previousbuild = "GRCh37"
 
 # Import Element Tree library
 import xml.etree.ElementTree as ET
 
 # Parse LRG file into element tree
-tree = ET.parse(lrgfilename)
+tree = ET.parse('LRG_214.xml')
 root = tree.getroot()
 print(tree)
 print(root)
@@ -59,8 +59,8 @@ print(dict)
 
 def check_build_length(dict):
     '''
-    Method to check the length of each build, returns a bool
-    Input params: A dictionary of dictionaries contain build attributes
+    Method to check the length within each build, returns a bool
+    Input params: A dictionary containing build attributes
     Return: Bool 
     '''
     length_lrg = int(dict['span_lrg_end']) - int(dict['span_lrg_start'])
@@ -72,6 +72,11 @@ def check_build_length(dict):
     return is_same
 
 def compare_build_length(dict):
+    '''
+    Method to compare the length between build, returns a bool
+    Input params: A dictionary of dictionaries contain build attributes
+    Return: Bool 
+    '''
     length37 = int(dict['GRCh37']['span_other_end']) - int(dict['GRCh37']['span_other_start'])
     length38 = int(dict['GRCh38']['span_other_end']) - int(dict['GRCh38']['span_other_start'])
     
@@ -133,53 +138,17 @@ transcripts = {}
 
 # Loop through fixed annotations
 for m in fixed_annotation_subroot:
-    #Transcript number is defined
-    
     # Subroot of transcripts
     transcript_subroot = m.iter('transcript')
     for n in transcript_subroot:
         # Get transcript name
         transcriptname = n.attrib['name']
         
-        # Make transcript and protein names for extraction
-        lrgname = 'LRG_' + lrg
-        lrgtranscriptname = 'LRG_' + lrg + transcriptname
-        lrgproteinname = lrgtranscriptname.replace('t', 'p')
-        
-        # Single transcript dictionary
-        transcript = {}
-        
         # Subroot of exons
         exons_subroot = n.iter('exon')
         for o in exons_subroot:
-            exonnumber = o.attrib['label']
-            
-            # Exon coordinates dictionary
-            exon = {}
-            
-            # Subset of coordinates
-            coordinates_subset = o.iter('coordinates')
-            for p in coordinates_subset:
-                exonstart = p.attrib['start']
-                exonend = p.attrib['end']
-                coord_system = p.attrib['coord_system']
-                
-                # If statement for assigning coordinates
-                if coord_system == lrgname:
-                    exon['genomicstart'] = exonstart
-                    exon['genomicend'] = exonend
-                elif coord_system == lrgtranscriptname:
-                    exon['transcriptstart'] = exonstart
-                    exon['transcriptend'] = exonend
-                elif coord_system == lrgproteinname:
-                    exon['proteinstart'] = exonstart
-                    exon['proteinend'] = exonend
-            
-            # Add coordinates to that exon
-            transcript[exonnumber] = exon
-        
-        # Add transcript to the transcripts dictionary
-        transcripts[transcriptname] = transcript
+            # Get transcript name
+            transcriptname = n.attrib['name']
 
 # test check_build_length - should print'true' to screen
 check_37 = check_build_length(dict['GRCh37'])
