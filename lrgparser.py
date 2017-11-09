@@ -13,7 +13,6 @@ root = tree.getroot()
 print(tree)
 print(root)
 
-
 #def get_build_summary():
 # Takes a subroot of annotation_set tags
 annotation_set_subroot = root.iter('annotation_set')
@@ -23,6 +22,9 @@ for m in annotation_set_subroot:
     if m.attrib['type'] == "lrg":
         # Send to mapping subroot
         mapping_set_subroot = m.iter('mapping')
+
+# create dictionary to hold attributes from both builds
+dict = {}
 
 # Print mapping tags, text and attrib
 for m in mapping_set_subroot:
@@ -39,35 +41,23 @@ for m in mapping_set_subroot:
         span_other_start = n.attrib['other_start']
         span_other_end = n.attrib['other_end']
         
-    dict = {}
-    #Search by coord system
-    if coord_system == currentbuild:
-        # Create current build dictionary
-        d = {}
-        
+        # Create temp current build dictionary
+        d1 = {}
+            
         # Populate current build dictionary
-        d['span_lrg_start'] = span_lrg_start
-        d['span_lrg_end'] = span_lrg_end
-        d['span_other_start'] = span_other_start
-        d['span_other_end'] = span_other_end
-        d['mapping_other_start'] = m.attrib['other_start']
-        d['mapping_other_end'] = m.attrib['other_end']
-        # Add to final dict
-        dict[currentbuild] = d
-        
-    elif coord_system == previousbuild:
-            # Create previous build dictionary
-        d = {}
+        d1['span_lrg_start'] = span_lrg_start
+        d1['span_lrg_end'] = span_lrg_end
+        d1['span_other_start'] = span_other_start
+        d1['span_other_end'] = span_other_end
+        d1['mapping_other_start'] = m.attrib['other_start']
+        d1['mapping_other_end'] = m.attrib['other_end']
+        # Add to final dict, using the build as the key
     
-        # Populate previous build dictionary
-        d['span_lrg_start'] = span_lrg_start
-        d['span_lrg_end'] = span_lrg_end
-        d['span_other_start'] = span_other_start
-        d['span_other_end'] = span_other_end
-        d['mapping_other_start'] = m.attrib['other_start']
-        d['mapping_other_end'] = m.attrib['other_end']
-        dict[previousbuild] = d
-        
-    print(dict)
-
+        # Name sub dictionary as coordinate system
+        dict[coord_system] = d1
+    
+print(dict)
 #return dict
+
+#builddict = get_build_summary()
+#print(builddict)
