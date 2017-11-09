@@ -13,6 +13,8 @@ root = tree.getroot()
 print(tree)
 print(root)
 
+
+#def get_build_summary():
 # Takes a subroot of annotation_set tags
 annotation_set_subroot = root.iter('annotation_set')
 
@@ -27,39 +29,45 @@ for m in mapping_set_subroot:
     #Retrieve coord_system and remove .p
     coord_system = m.attrib['coord_system']
     coord_system = coord_system.split('.')[0]
-    
+
     # Takes a subroot of mapping_span tags
     mapping_span_subroot = m.iter('mapping_span')
-    
+
     for n in mapping_span_subroot:
         span_lrg_start = n.attrib['lrg_start']
         span_lrg_end = n.attrib['lrg_end']
         span_other_start = n.attrib['other_start']
         span_other_end = n.attrib['other_end']
-    
+        
+    dict = {}
     #Search by coord system
     if coord_system == currentbuild:
         # Create current build dictionary
-        currentbuilddict = {}
+        d = {}
         
         # Populate current build dictionary
-        currentbuilddict['span_lrg_start'] = span_lrg_start
-        currentbuilddict['span_lrg_end'] = span_lrg_end
-        currentbuilddict['span_other_start'] = span_other_start
-        currentbuilddict['span_other_end'] = span_other_end
-        currentbuilddict['mapping_other_start'] = m.attrib['other_start']
-        currentbuilddict['mapping_other_end'] = m.attrib['other_end']
-    elif coord_system == previousbuild:
-        # Create previous build dictionary
-        previousbuilddict = {}
+        d['span_lrg_start'] = span_lrg_start
+        d['span_lrg_end'] = span_lrg_end
+        d['span_other_start'] = span_other_start
+        d['span_other_end'] = span_other_end
+        d['mapping_other_start'] = m.attrib['other_start']
+        d['mapping_other_end'] = m.attrib['other_end']
+        # Add to final dict
+        dict[currentbuild] = d
         
+    elif coord_system == previousbuild:
+            # Create previous build dictionary
+        d = {}
+    
         # Populate previous build dictionary
-        previousbuilddict['span_lrg_start'] = span_lrg_start
-        previousbuilddict['span_lrg_end'] = span_lrg_end
-        previousbuilddict['span_other_start'] = span_other_start
-        previousbuilddict['span_other_end'] = span_other_end
-        previousbuilddict['mapping_other_start'] = m.attrib['other_start']
-        previousbuilddict['mapping_other_end'] = m.attrib['other_end']
-            
-print(currentbuilddict)
-print(previousbuilddict)
+        d['span_lrg_start'] = span_lrg_start
+        d['span_lrg_end'] = span_lrg_end
+        d['span_other_start'] = span_other_start
+        d['span_other_end'] = span_other_end
+        d['mapping_other_start'] = m.attrib['other_start']
+        d['mapping_other_end'] = m.attrib['other_end']
+        dict[previousbuild] = d
+        
+    print(dict)
+
+#return dict
