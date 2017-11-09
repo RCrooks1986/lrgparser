@@ -135,7 +135,18 @@ fixed_annotation_subroot = root.iter('fixed_annotation')
 transcripts = {}
 
 # Loop through fixed annotations
-for m in fixed_annotation_subroot:
+for m in fixed_annotation_subroot:    
+    # Sequence sub root
+    sequence_subroot = m.iter('sequence')
+    loopcount = 0        
+    
+    # Lift Genomic sequence from Genomic subroot
+    for n in sequence_subroot:
+        if loopcount == 0:
+            genomicsequence = n.text
+        
+        loopcount = loopcount+1
+    
     # Subroot of transcripts
     transcript_subroot = m.iter('transcript')
     for n in transcript_subroot:
@@ -147,6 +158,63 @@ for m in fixed_annotation_subroot:
         for o in exons_subroot:
             # Get transcript name
             transcriptname = n.attrib['name']
+            exonnumber = o.attrib['label']
+            
+            # Exon coordinates dictionary
+            exon = {}
+            
+            # Subset of coordinates
+            coordinates_subset = o.iter('coordinates')
+            for p in coordinates_subset:
+                exonstart = p.attrib['start']
+                exonend = p.attrib['end']
+                coord_system = p.attrib['coord_system']
+                
+                # If statement for assigning coordinates
+                if coord_system == lrgname:
+                    exon['genomicstart'] = exonstart
+                    exon['genomicend'] = exonend
+                elif coord_system == lrgtranscriptname:
+                    exon['transcriptstart'] = exonstart
+                    exon['transcriptend'] = exonend
+                elif coord_system == lrgproteinname:
+                    exon['proteinstart'] = exonstart
+                    exon['proteinend'] = exonend
+            
+            # Add coordinates to that exon
+            transcript[exonnumber] = exon
+        
+        # Subroot of cDNA
+        cdna_subroot = n.iter('cdna')
+        for o in cdna_subroot:
+            # Subroot of sequence
+            sequence_subroot = o.iter('sequence')
+            
+            # Lift cDNA from cDNA subroot
+            for p in sequence_subroot:
+                cdna = p.text
+                
+                transcript['cDNA'] = cdna
+
+        # Subroot of cDNA
+        coding_region_subroot = n.iter('coding_region')
+        for o in coding_region_subroot:
+            # Subroot of coding region
+            translation_subroot = o.iter('translation')
+            
+            # Subroot of translation
+            for p in translation_subroot:
+                # Subroot of sequence
+                sequence_subroot = p.iter('sequence')
+                
+                # Lift protein sequence from coding region subroot
+                for q in sequence_subroot:
+                    protein = q.text
+                    
+                    transcript['protein'] = protein
+            
+        # Add transcript to the transcripts dictionary
+        transcripts[transcriptname] = transcript
 
 # test check_build_length - should print'true' to screen
 check_37 = check_build_length(dict['GRCh37'])
