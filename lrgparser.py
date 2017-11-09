@@ -8,7 +8,7 @@ previousbuild = "GRCh37"
 import xml.etree.ElementTree as ET
 
 # Parse LRG file into element tree
-tree = ET.parse('LRG_1.xml')
+tree = ET.parse('LRG_214.xml')
 root = tree.getroot()
 print(tree)
 print(root)
@@ -63,3 +63,23 @@ for m in mapping_set_subroot:
             
 print(currentbuilddict)
 print(previousbuilddict)
+
+# Takes a subroot of fixed annotation tags
+fixed_annotation_subroot = root.iter('fixed_annotation')
+
+# Create transcripts dictionary
+transcripts = {}
+
+# Loop through fixed annotations
+for m in fixed_annotation_subroot:
+    # Subroot of transcripts
+    transcript_subroot = m.iter('transcript')
+    for n in transcript_subroot:
+        # Get transcript name
+        transcriptname = n.attrib['name']
+        
+        # Subroot of exons
+        exons_subroot = n.iter('exon')
+        for o in exons_subroot:
+            # Get transcript name
+            transcriptname = n.attrib['name']
