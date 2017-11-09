@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#Current and previous build, update these if genome build changes
-currentbuild = "GRCh38"
-previousbuild = "GRCh37"
+#LRG variables
+lrg = '214'
+lrgfilename = 'LRG_' + lrg + '.xml'
 
 # Import Element Tree library
 import xml.etree.ElementTree as ET
