@@ -11,6 +11,5 @@ root = tree.getroot()
 print(tree)
 print(root)
 
-for child in root:
-    print('hello')
+for child in root[0][8]:
     print(child.tag, child.attrib)
