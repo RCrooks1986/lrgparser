@@ -13,7 +13,6 @@ root = tree.getroot()
 print(tree)
 print(root)
 
-#def get_build_summary():
 # Takes a subroot of annotation_set tags
 annotation_set_subroot = root.iter('annotation_set')
 
@@ -55,9 +54,19 @@ for m in mapping_set_subroot:
     
         # Name sub dictionary as coordinate system
         dict[coord_system] = d1
-    
 print(dict)
-#return dict
 
-#builddict = get_build_summary()
-#print(builddict)
+def check_build_length(dict):
+    length_lrg = int(dict['span_lrg_end']) - int(dict['span_lrg_start'])
+    length_other = int(dict['span_other_end']) - int(dict['span_other_start'])
+    if length_lrg == length_other:
+        is_same = True
+    else:
+        is_same = False
+    return is_same
+            
+# test check_build_length - should print'true' to screen
+check_37 = check_build_length(dict['GRCh37'])
+check_38 = check_build_length(dict['GRCh38'])
+print(check_37)
+print(check_38)
