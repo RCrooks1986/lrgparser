@@ -277,7 +277,13 @@ def seq_to_fasta(seq, lrg_name):
 ######## Running the tests, if pass, then the code ########
     
 def containsAny(str, set):
-    """Check whether 'str' contains ANY of the chars in 'set'"""
+    '''
+    Check whether 'str' contains ANY of the chars in 'set'
+    
+    Input is a string (str) and the set of characters to confirm (set)
+    
+    Returns 1 if answer is true
+    '''
     return 1 in [c in str for c in set]
 
 ######### Running the code ##########
