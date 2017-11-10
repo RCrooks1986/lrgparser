@@ -231,24 +231,21 @@ position = compare_build_positions(dict) ## check start positions for each build
 length_diff = abs(find_length_difference(dict))
 
 
-html_str = """
-<h1>Comparison of builds </h1>
+html_str = "<h1>Comparison of builds </h1>"
+html_str = html_str + "<table border=1>"
+html_str = html_str + "<tr>"
+html_str = html_str + "<th>Build</th>"
+html_str = html_str + "<th>Start Position</th>"
+html_str = html_str + "<th>End Position</th>"
+html_str = html_str + "</tr>"
 
-<table border=1>
-     <tr>
-     <th>Build</th>
-       <th>Start Position</th>
-       <th>End Position</th>
-     </tr>
-     <indent>
-       <tr>
-         <td><%= position %></td>
-         <td><%= length_diff %></td>
-         <td>hello3</td>
-       </tr>
-     </indent>
-</table>
-"""
+html_str = html_str + "<tr>"
+html_str = html_str + "<td>" + position + "</td>"
+html_str = html_str + "<td>" + position + "</td>"
+html_str = html_str + "<td>" + position + "</td>"
+html_str = html_str + "</tr>"
+
+html_str = html_str + "</table>"
 
 Html_file= open("test.html","w")
 
