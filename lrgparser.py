@@ -147,7 +147,6 @@ def get_genomic(root):
     
     Output is the genomic sequence in the XML file
     '''
-
     # Loop for find children under fixed_annotation
     for child in root.findall('fixed_annotation'):
 
@@ -222,37 +221,9 @@ position = compare_build_positions(dict) ## check start positions for each build
 length_diff = abs(find_length_difference(dict))
 
 
-html_str = """
-<h1>Comparison of builds </h1>
-
-<table border=1>
-     <tr>
-     <th>Build</th>
-       <th>Start Position</th>
-       <th>End Position</th>
-     </tr>
-     <indent>
-       <tr>
-         <td><%= position %></td>
-         <td><%= length_diff %></td>
-         <td>hello3</td>
-       </tr>
-     </indent>
-</table>
-"""
-
-Html_file= open("test.html","w")
-
-Html_file.write(html_str)
-Html_file.close()
 
 
 ########CH additional bits
-def containsAny(str, set):
-    """Check whether 'str' contains ANY of the chars in 'set'"""
-    return 1 in [c in str for c in set]
-
-
 for child in root:
     print(child.tag, child.attrib)
 
@@ -288,17 +259,63 @@ def slice_genomic(seq, exon_dict):
     return fasta_out
 
 
+         
+    ####### generating output ########
+def display_output_text(build_dict, seq):
+    for build in build_dict: 
+        lrg_start = build_dict[build]['span_lrg_start']
+        lrg_end = build_dict[build]['span_lrg_end']
+        other_start = build_dict[build]['span_other_start']
+        other_end = build_dict[build]['span_other_end']
+        strand = build_dict[build]['strand']
+        print(lrg_start, lrg_end, other_start, other_end, strand)
+
+
+    html_str = """
+    <h1>Comparison of builds </h1>
+    
+    <table border=1>
+         <tr>
+         <th>Build</th>
+           <th>Start Position</th>
+           <th>End Position</th>
+         </tr>
+         <indent>
+           <tr>
+             <td><%= build %></td>
+             <td><%= other_start %></td>
+             <td><%= other_end %></td>
+           </tr>
+         </indent>
+    </table>
+    <p>{{ seq }}</p>
+    """
+    
+    Html_file= open("test.html","w")
+    
+    Html_file.write(html_str)
+    Html_file.close()
+
+def seq_to_fasta(seq, lrg_name):
+    header = "> Coding sequence for '%s' \n" % lrg_name
+    fasta_out = header + seq
+    f = open(lrg_name + ".fasta",'w')
+    f.write(fasta_out)
+    f.close()
 
 ######## Running the tests, if pass, then the code ########
     
-
+def containsAny(str, set):
+    """Check whether 'str' contains ANY of the chars in 'set'"""
+    return 1 in [c in str for c in set]
 
 ######### Running the code ##########
-build = get_build_information(root)        
+build = get_build_information(root) 
+print(build)       
 exon = get_exon_coordinates(root, lrg_name)
 genomic = get_genomic(root)
-slice = slice_genomic(genomic, exon)
+sliced = slice_genomic(genomic, exon)
+display_output_text(build, sliced)
+seq_to_fasta(sliced, lrg_name)
 
-            
-    ####### generating output ########
-
+   
