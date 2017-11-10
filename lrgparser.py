@@ -138,94 +138,62 @@ def output_comparison(dict):
     length_diff = abs(find_length_difference(dict))
     
     print("Difference in lrg length:", length_diff, "Start position is shifted by:", position)
+
+def get_genomic(root):
+    '''
+    Method to retrieve genomic sequence from XML root table
+    
+    Input is a root tree for an LRG file in XML format
+    
+    Output is the genomic sequence in the XML file
+    '''
+
+    # Loop for find children under fixed_annotation
+    for child in root.findall('fixed_annotation'):
+
+        # Find genomic sequence child
+        genomic = child.find('sequence').text
+    return genomic
+
+def get_build_information(root):
+    '''
+    Method to get build information from xml
+    
+    Root is the root tree produced from the LRG file (in XML format)
+    
+    Function returns a dictionary containing the LRG start and end positions, the genomic start and end positions, and the strand that the sequence is found in.
+    '''
+    
+    # Create dictionary for output
+    d = {}
+    
+    # Loop through each child in find all
+    for child in root.findall('.//annotation_set[@type="lrg"]'):
+    
+        # Iterate each child in mapping
+        for m in child.iter('mapping'):
+            
+            # Retrieve coordinate system
+            coord_system = m.attrib['coord_system']
+            
+            for span in m.iter("mapping_span"):
+                # Sub dictionary
+                d1 = {}
+                d1['span_lrg_start'] = span.attrib['lrg_start']
+                d1['span_lrg_end'] = span.attrib['lrg_end']
+                d1['span_other_start'] = span.attrib['other_start']
+                d1['span_other_end'] = span.attrib['other_end']
+                d1['strand'] = span.attrib['strand']
+                
+                d[coord_system] = d1
+    
+    return(d)
     
 # Takes a subroot of fixed annotation tags
 fixed_annotation_subroot = root.iter('fixed_annotation')
 
 # Create transcripts dictionary
 transcript = {}
-
-# Loop through fixed annotations
-for m in fixed_annotation_subroot:    
-    # Sequence sub root
-    sequence_subroot = m.iter('sequence')
-    loopcount = 0        
-    
-    # Lift Genomic sequence from Genomic subroot
-    for n in sequence_subroot:
-        if loopcount == 0:
-            genomicsequence = n.text
-        
-        loopcount = loopcount+1
-    
-    # Subroot of transcripts
-    transcript_subroot = m.iter('transcript')
-    for n in transcript_subroot:
-        # Get transcript name
-        transcriptname = n.attrib['name']
-        
-        # Subroot of exons
-        exons_subroot = n.iter('exon')
-        for o in exons_subroot:
-            # Get transcript name
-            transcriptname = n.attrib['name']
-            exonnumber = o.attrib['label']
-            
-            # Exon coordinates dictionary
-            exon = {}
-            
-            # Subset of coordinates
-            coordinates_subset = o.iter('coordinates')
-            for p in coordinates_subset:
-                exonstart = p.attrib['start']
-                exonend = p.attrib['end']
-                coord_system = p.attrib['coord_system']
-                
-                # If statement for assigning coordinates
-                if coord_system == lrgfilename:
-                    exon['genomicstart'] = exonstart
-                    exon['genomicend'] = exonend
-                elif coord_system == transcriptname:
-                    exon['transcriptstart'] = exonstart
-                    exon['transcriptend'] = exonend
-               # elif coord_system == lrgproteinname:
-                #    exon['proteinstart'] = exonstart
-                 #   exon['proteinend'] = exonend
-            
-            # Add coordinates to that exon
-            transcript[exonnumber] = exon
-        
-        # Subroot of cDNA
-        cdna_subroot = n.iter('cdna')
-        for o in cdna_subroot:
-            # Subroot of sequence
-            sequence_subroot = o.iter('sequence')
-            
-            # Lift cDNA from cDNA subroot
-            for p in sequence_subroot:
-                cdna = p.text
-                
-                transcript['cDNA'] = cdna
-
-        # Subroot of cDNA
-        coding_region_subroot = n.iter('coding_region')
-        for o in coding_region_subroot:
-            # Subroot of coding region
-            translation_subroot = o.iter('translation')
-            
-            # Subroot of translation
-            for p in translation_subroot:
-                # Subroot of sequence
-                sequence_subroot = p.iter('sequence')
-                
-                # Lift protein sequence from coding region subroot
-                for q in sequence_subroot:
-                    protein = q.text
-                    
-                    transcript['protein'] = protein
-            
-        # Add transcript to the transcripts dictionary
-        transcript[transcriptname] = transcript
 
 # test check_build_length - should print'true' to screen
 check_37 = check_build_length(dict['GRCh37'])
@@ -235,6 +203,7 @@ check_38 = check_build_length(dict['GRCh38'])
 print(check_37)
 print(check_38)
 print('###############')
+
 # test compare_build_positions
 pos = compare_build_positions(dict)
 
@@ -283,11 +252,6 @@ Html_file.close()
 
 for child in root:
     print(child.tag, child.attrib)
-    
-def get_genomic(root):
-    for child in root.findall('fixed_annotation'):   
-        genomic = child.find('sequence').text
-    return genomic
 
 def get_exon_coordinates(root, lrg_name):
     d = {}
@@ -303,32 +267,7 @@ def get_exon_coordinates(root, lrg_name):
                 d1['start'] = c.get('start')
                 d1['end'] = c.get('end')
                 d[exon.get('label')] = d1
-        return(d)
-
-
-def get_build_information(root):
-    '''
-    Method to get build information from xml
-    '''
-    d = {}
-    for child in root.findall('.//annotation_set[@type="lrg"]'):
-        print(child.tag, child.attrib)
-        for m in child.iter('mapping'):
-            coord_system = m.attrib['coord_system']
-            coord_system = coord_system.split('.')[0]
-            for span in m.iter("mapping_span"):
-                d1 = {}
-                d1['span_lrg_start'] = span.attrib['lrg_start']
-                d1['span_lrg_end'] = span.attrib['lrg_end']
-                d1['span_other_start'] = span.attrib['other_start']
-                d1['span_other_end'] = span.attrib['other_end']
-                d1['strand'] = span.attrib['strand']
-                print("-----CH----")
-                print(d1)
-                d[coord_system] = d1
-    return(d)
-            
-            
+        return(d)          
     
 build = get_build_information(root)        
 exon = get_exon_coordinates(root, lrg_name)
@@ -338,4 +277,7 @@ print(build)
 print("***************")
 print(exon)
 
- 
+
+            
+     
+
