@@ -15,6 +15,13 @@ lrgurl = path + file
 # Name of the LRG
 lrg_name = 'LRG_' + lrgnumber
 
+# Create HTML Heading
+master_html_str = "<html><head>"
+master_html_str = master_html_str + "<title>LRG File Analysis of " + lrg_name + "</title>"
+master_html_str = master_html_str + "</head>"
+master_html_str = master_html_str + "<body>"
+master_html_str = master_html_str + "<h1>LRG File Analysis of " + lrg_name + "</h1>"
+
 # Retrieve data and convert to text
 response = urllib.request.urlopen(lrgurl)
 data = response.read()      # a `bytes` object
@@ -237,12 +244,10 @@ def display_output_text(build_dict, seq):
         html_str = html_str + "<td>" + other_end + "</td>"
         html_str = html_str + "</tr>"
     
+    # Close table
     html_str = html_str + "</table>"
     
-    Html_file= open("test.html","w")
-    
-    Html_file.write(html_str)
-    Html_file.close()
+    return html_str
 
 def seq_to_fasta(seq, lrg_name):
     header = "> Coding sequence for '%s' \n" % lrg_name
@@ -263,7 +268,15 @@ print(build)
 exon = get_exon_coordinates(root, lrg_name)
 genomic = get_genomic(root)
 sliced = slice_genomic(genomic, exon)
-display_output_text(build, sliced)
+build_info_table_html = display_output_text(build, sliced)
 seq_to_fasta(sliced, lrg_name)
 
-   
+# Add build information HTML
+master_html_str = master_html_str + build_info_table_html
+
+# Close HTML
+master_html_str = master_html_str + "</body></html>"
+
+Html_file=open("test.html","w")
+Html_file.write(html_str)
+Html_file.close()
