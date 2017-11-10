@@ -166,12 +166,25 @@ fixed_annotation_subroot = root.iter('fixed_annotation')
 # test compare_build_positions
 pos = compare_build_positions(dict)
 
-print('Is the position of the LRG on each build the same?', pos)
+if pos is True:
+    pos = "True"
+else:
+    pos = "False"
+
+pos_text = 'Is the position of the LRG on each build the same? ' + pos
+
+#print(pos_text)
+
+html_checking = "<p>" + pos_text + "</p>"
 
 #test to return the position shift between builds
-
 shift = find_position_shift(dict)
-print("The new GR38 build is shifted by", shift, "nucleotide positions")
+shift = str(shift)
+shift_text = "The new GRCh38 build is shifted by " + shift + " nucleotide positions"
+
+#print(shift_text)
+
+html_checking = html_checking + "<p>" + shift_text + "</p>"
 
 print(output_comparison)
 ##################### output to html #########################
@@ -269,7 +282,7 @@ def containsAny(str, set):
 
 ######### Running the code ##########
 build = get_build_information(root) 
-print(build)       
+print(build)
 exon = get_exon_coordinates(root, lrg_name)
 genomic = get_genomic(root)
 sliced = slice_genomic(genomic, exon)
@@ -278,6 +291,8 @@ seq_to_fasta(sliced, lrg_name)
 
 # Add build information HTML
 master_html_str = master_html_str + build_info_table_html
+
+master_html_str = master_html_str + html_checking
 
 # Close HTML
 master_html_str = master_html_str + "</body></html>"
