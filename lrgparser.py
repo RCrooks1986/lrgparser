@@ -87,6 +87,11 @@ def compare_build_length(dict):
     return is_same
 
 def find_length_difference(dict):
+    '''
+    Method to find the differences in length between builds (length of GRCh38 - GRCh37)
+    Input params: A dictionary of dictionaries contain build attributes
+    Return: Int
+    '''
     length37 = int(dict['GRCh37']['span_other_end']) - int(dict['GRCh37']['span_other_start'])
     length38 = int(dict['GRCh38']['span_other_end']) - int(dict['GRCh38']['span_other_start'])
     
@@ -121,6 +126,11 @@ def find_position_shift(dict):
     return shift
 
 def output_comparison(dict):
+    '''
+    Method to output the build comparisons
+    Input params: A dictionary of dictionaries contain build attributes
+    Return: String 
+    '''
     #length = compare_build_length(dict) ## everything ok between builds?
     position = compare_build_positions(dict) ## check start positions for each build
     #shift = find_position_shift(dict)
@@ -132,7 +142,7 @@ def output_comparison(dict):
 fixed_annotation_subroot = root.iter('fixed_annotation')
 
 # Create transcripts dictionary
-transcripts = {}
+transcript = {}
 
 # Loop through fixed annotations
 for m in fixed_annotation_subroot:    
@@ -171,15 +181,15 @@ for m in fixed_annotation_subroot:
                 coord_system = p.attrib['coord_system']
                 
                 # If statement for assigning coordinates
-                if coord_system == lrgname:
+                if coord_system == lrgfilename:
                     exon['genomicstart'] = exonstart
                     exon['genomicend'] = exonend
-                elif coord_system == lrgtranscriptname:
+                elif coord_system == transcriptname:
                     exon['transcriptstart'] = exonstart
                     exon['transcriptend'] = exonend
-                elif coord_system == lrgproteinname:
-                    exon['proteinstart'] = exonstart
-                    exon['proteinend'] = exonend
+               # elif coord_system == lrgproteinname:
+                #    exon['proteinstart'] = exonstart
+                 #   exon['proteinend'] = exonend
             
             # Add coordinates to that exon
             transcript[exonnumber] = exon
@@ -214,7 +224,7 @@ for m in fixed_annotation_subroot:
                     transcript['protein'] = protein
             
         # Add transcript to the transcripts dictionary
-        transcripts[transcriptname] = transcript
+        transcript[transcriptname] = transcript
 
 # test check_build_length - should print'true' to screen
 check_37 = check_build_length(dict['GRCh37'])
@@ -265,3 +275,60 @@ Html_file= open("test.html","w")
 
 Html_file.write(html_str)
 Html_file.close()
+
+
+
+########CH additional bits
+
+for child in root:
+    print(child.tag, child.attrib)
+    
+def get_genomic(root):
+    for child in root.findall('fixed_annotation'):   
+        genomic = child.find('sequence').text
+    return genomic
+
+def get_exon_coordinates(root):
+    d = {}
+    for child in root.findall('.//transcript[@name="t1"]'):
+        for exon in child.findall('exon'):
+        #print(exon.tag, exon.attrib)
+            d['label'] = exon.get('label')
+            for c in exon.findall('coordinates'):
+            #start = c['start'].value  
+            #print(c.tag, c.attrib)
+                d['start'] = c.get('start')
+                d['end'] = c.get('end')
+    print(d)
+    return(d)
+
+
+def get_build_information(root):
+    '''
+    Method to get build information from xml
+    '''
+    d = {}
+    for child in root.findall('.//annotation_set[@type="lrg"]'):
+        print(child.tag, child.attrib)
+        for m in child.iter('mapping'):
+            coord_system = m.attrib['coord_system']
+            coord_system = coord_system.split('.')[0]
+            d['build'] = coord_system
+            print("------*------")
+            print(m.tag, m.attrib)
+            for span in m.iter("mapping_span"):
+                d1 = {}
+                d1['span_lrg_start'] = span.attrib['lrg_start']
+                d1['span_lrg_end'] = span.attrib['lrg_end']
+                d1['span_other_start'] = span.attrib['other_start']
+                d1['span_other_end'] = span.attrib['other_end']
+                d1['strand'] = span.attrib['strand']
+                print("---------")
+                print(d1)
+            d[coord_system] = d1
+            print("********")
+            print(d)
+            
+            
+get_build_information(root)        
+     
