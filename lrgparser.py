@@ -256,8 +256,11 @@ Html_file.write(html_str)
 Html_file.close()
 
 
-
 ########CH additional bits
+def containsAny(str, set):
+    """Check whether 'str' contains ANY of the chars in 'set'"""
+    return 1 in [c in str for c in set]
+
 
 for child in root:
     print(child.tag, child.attrib)
@@ -277,16 +280,34 @@ def get_exon_coordinates(root, lrg_name):
                 d1['end'] = c.get('end')
                 d[exon.get('label')] = d1
         return(d)          
+        
+def slice_genomic(seq, exon_dict):
+    '''
+    slices genomic sequence
+    input params: a string of genomic sequence, and a dict of exons
+    returns: string of coding sequence
+    '''
+    fasta_out = ""
+    for exon in exon_dict:
+        start = exon_dict[exon]['start'] 
+        end = exon_dict[exon]['end']
+        fasta_temp = seq[int(start):int(end)]
+        fasta_out += fasta_temp
+        assert containsAny('ATGC', fasta_out)
+    return fasta_out
+
+
+
+######## Running the tests, if pass, then the code ########
     
+
+
+######### Running the code ##########
 build = get_build_information(root)        
 exon = get_exon_coordinates(root, lrg_name)
 genomic = get_genomic(root)
-print("***************")
-print(build)
-print("***************")
-print(exon)
-
+slice = slice_genomic(genomic, exon)
 
             
-     
+    ####### generating output ########
 
