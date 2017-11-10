@@ -1,18 +1,27 @@
 # -*- coding: utf-8 -*-
 
-#LRG variables
-lrg = '214'
-lrg_name= 'LRG_' + lrg 
-lrgfilename = 'LRG_' + lrg + '.xml'
-
 # Import Element Tree library
 import xml.etree.ElementTree as ET
+# Import url library
+import urllib
 
-# Parse LRG file into element tree
-tree = ET.parse('LRG_214.xml')
-root = tree.getroot()
-print(tree)
-print(root)
+# Prompt user to specify an LRG they wish to download
+lrgnumber = input("Please type the LRG number that you wish to extract remotely:")
+
+# url to retrieve XML from
+file = 'LRG_' + lrgnumber + '.xml'
+path = 'ftp://ftp.ebi.ac.uk/pub/databases/lrgex/'
+lrgurl = path + file
+# Name of the LRG
+lrg_name = 'LRG_' + lrgnumber
+
+# Retrieve data and convert to text
+response = urllib.request.urlopen(lrgurl)
+data = response.read()      # a `bytes` object
+lrgtext = data.decode('utf-8') # a `str`; this step can't be used if data is binary
+
+# Extract string as an element tree
+root = ET.fromstring(lrgtext)
 
 # Takes a subroot of annotation_set tags
 annotation_set_subroot = root.iter('annotation_set')
