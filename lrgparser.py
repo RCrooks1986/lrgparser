@@ -2,6 +2,7 @@
 
 #LRG variables
 lrg = '214'
+lrg_name= 'LRG_' + lrg 
 lrgfilename = 'LRG_' + lrg + '.xml'
 
 # Import Element Tree library
@@ -288,19 +289,21 @@ def get_genomic(root):
         genomic = child.find('sequence').text
     return genomic
 
-def get_exon_coordinates(root):
+def get_exon_coordinates(root, lrg_name):
     d = {}
+    
     for child in root.findall('.//transcript[@name="t1"]'):
         for exon in child.findall('exon'):
         #print(exon.tag, exon.attrib)
-            d['label'] = exon.get('label')
-            for c in exon.findall('coordinates'):
+           # d['label'] = exon.get('label')
+            for c in exon.findall("coordinates[@coord_system='%s']" % lrg_name ):
+                d1 = {}
             #start = c['start'].value  
             #print(c.tag, c.attrib)
-                d['start'] = c.get('start')
-                d['end'] = c.get('end')
-    print(d)
-    return(d)
+                d1['start'] = c.get('start')
+                d1['end'] = c.get('end')
+                d[exon.get('label')] = d1
+        return(d)
 
 
 def get_build_information(root):
@@ -313,9 +316,6 @@ def get_build_information(root):
         for m in child.iter('mapping'):
             coord_system = m.attrib['coord_system']
             coord_system = coord_system.split('.')[0]
-            d['build'] = coord_system
-            print("------*------")
-            print(m.tag, m.attrib)
             for span in m.iter("mapping_span"):
                 d1 = {}
                 d1['span_lrg_start'] = span.attrib['lrg_start']
@@ -323,12 +323,19 @@ def get_build_information(root):
                 d1['span_other_start'] = span.attrib['other_start']
                 d1['span_other_end'] = span.attrib['other_end']
                 d1['strand'] = span.attrib['strand']
-                print("---------")
+                print("-----CH----")
                 print(d1)
-            d[coord_system] = d1
-            print("********")
-            print(d)
+                d[coord_system] = d1
+    return(d)
             
             
-get_build_information(root)        
-     
+    
+build = get_build_information(root)        
+exon = get_exon_coordinates(root, lrg_name)
+genomic = get_genomic(root)
+print("***************")
+print(build)
+print("***************")
+print(exon)
+
+ 
