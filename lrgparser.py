@@ -250,6 +250,11 @@ def display_output_text(build_dict, seq):
     return html_str
 
 def seq_to_fasta(seq, lrg_name):
+    '''
+    Method to write a FASTA file containing the coding sequence with the name of the LRG and the sequence from the LRG
+    
+    Add LRG 
+    '''
     header = "> Coding sequence for '%s' \n" % lrg_name
     fasta_out = header + seq
     f = open(lrg_name + ".fasta",'w')
@@ -278,5 +283,5 @@ master_html_str = master_html_str + build_info_table_html
 master_html_str = master_html_str + "</body></html>"
 
 Html_file=open("test.html","w")
-Html_file.write(html_str)
+Html_file.write(master_html_str)
 Html_file.close()
