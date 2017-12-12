@@ -21,10 +21,9 @@ To run the LRG parser from command line:
 python lrgparser.py
 ```
 
-You will be prompted to enter an LRG number in the format LRG001. The output is placed into the working directory and comprises of:
+You will be prompted to enter an LRG number. This should only be the number of the LRG, for example for LRG_214, enter '214'. The output is placed into the working directory and comprises of:
 * a fasta file of the coding sequence of the LRG
 * html containing a comparison of the LRG between the GrCh37 and GrCh38 build. 
-
 
 ## Built With
 
