@@ -198,6 +198,11 @@ for child in root:
     print(child.tag, child.attrib)
 
 def get_exon_coordinates(root, lrg_name):
+    '''
+    Uses elementree to extract the exon coordinates from the 
+    Input params: a string of genomic sequence, and a dict of exons
+    Returns: string of coding sequence
+    '''
     d = {}
     
     for child in root.findall('.//transcript[@name="t1"]'):
@@ -215,9 +220,9 @@ def get_exon_coordinates(root, lrg_name):
         
 def slice_genomic(seq, exon_dict):
     '''
-    slices genomic sequence
-    input params: a string of genomic sequence, and a dict of exons
-    returns: string of coding sequence
+    Slices genomic sequence
+    Input params: a string of genomic sequence, and a dict of exons
+    Returns: string of coding sequence
     '''
     fasta_out = ""
     for exon in exon_dict:
@@ -231,9 +236,11 @@ def slice_genomic(seq, exon_dict):
 
          
     ####### generating output ########
-def display_output_text(build_dict, seq):
+def display_output_text(build_dict):
     '''
     Converts the build dictionaries to HTML tables
+	Input params: a dictionary of the build
+	Returns: an html string in table format of the dictionary	
     '''
     html_str = ""
     html_str = html_str + "<h1>Comparison of builds</h1>"
@@ -279,9 +286,7 @@ def seq_to_fasta(seq, lrg_name):
 def containsAny(str, set):
     '''
     Check whether 'str' contains ANY of the chars in 'set'
-    
-    Input is a string (str) and the set of characters to confirm (set)
-    
+    Input params: is a string (str) and the set of characters to confirm (set)
     Returns 1 if answer is true
     '''
     return 1 in [c in str for c in set]
