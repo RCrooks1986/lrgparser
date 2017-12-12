@@ -32,7 +32,7 @@ You will be prompted to enter an LRG number. This should only be the number of t
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [GitHub] (https://github.com/) for versioning.
 
 ## Authors
 
