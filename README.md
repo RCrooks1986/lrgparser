@@ -36,5 +36,5 @@ We use [GitHub] (https://github.com/) for versioning.
 
 ## Authors
 
-* **Richard Crookes** (https://github.com/RCrooks1986/)
+* **Richard Crooks** (https://github.com/RCrooks1986/)
 * **Christine Hicks** (https://github.com/bioinfochicks)
